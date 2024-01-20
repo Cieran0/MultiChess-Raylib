@@ -8,7 +8,7 @@ namespace MultiChess
 {
     public struct Piece
     {
-        public enum Type{
+        public enum Type {
             QUEEN,
             KING,
             ROOK,

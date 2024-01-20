@@ -40,8 +40,8 @@ namespace MultiChess
         private static Vector2? getSelectedSquare(int mouseX, int mouseY)
         {
 
-            int x = (mouseX - 480) / 120;
-            int y = 7 - (mouseY - 60) / 120;
+            int x = (mouseX - Display.scale(480)) / Display.scale(120);
+            int y = 7 - (mouseY - Display.scale(60)) / Display.scale(120);
 
             if (x < 0 || y < 0 || x> 7 || y > 7)
                 return null;

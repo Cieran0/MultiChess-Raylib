@@ -92,5 +92,20 @@ namespace MultiChess
         {
             return board[(int)vector.X, (int)vector.Y];
         }
+
+        public List<Move> getPossibleMoves(int x, int y)
+        {
+            Piece piece = board[x, y];
+            Move[] allMoves = (Move[])(Game.currentRuleSet[piece.type].Clone());
+            if(piece.team == Piece.Team.WHITE)
+            {
+                for(int i = 0; i < allMoves.Length; i++)
+                {
+                    allMoves[i].relativeX *= -1;
+                    allMoves[i].relativeY *= -1;
+                }
+            }
+            return new List<Move>(allMoves);
+        }
     }
 }
