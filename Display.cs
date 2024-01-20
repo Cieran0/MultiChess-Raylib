@@ -31,8 +31,10 @@ namespace MultiChess
 
             Raylib.ClearBackground(bg);
 
-            int[,] squareType = new int[8, 8];
 
+            //TODO: OPTOMIZE THIS IT SHOULDNT RUN EVERY FRAME JUST ONE WHEN PIECE IS SELECTED 
+
+            int[,] squareType = new int[8, 8];
 
             if(Game.selectedPiece != null)
             {
@@ -43,13 +45,8 @@ namespace MultiChess
 
                 foreach(Move move in Game.board.getPossibleMoves(x,y))
                 {
-                    Console.WriteLine(move.relativeX);
-                    Console.WriteLine(move.relativeY);
                     int newX = x + move.relativeX;
                     int newY = y + move.relativeY;
-                    if (newX < 0 || newY < 0 || newX > 7 || newY > 7)
-                        continue;
-
                     squareType[x + move.relativeX, y + move.relativeY] = 2;
                 }
             }

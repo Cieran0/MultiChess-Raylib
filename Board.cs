@@ -27,6 +27,7 @@ namespace MultiChess
 
         public void movePiece(int oldX, int oldY, int newX, int newY) {
             board[newX, newY] = board[oldX, oldY];
+            board[newX, newY].hasMoved = true;
             board[oldX, oldY] = Piece.emptySquare;
         }
 
@@ -97,15 +98,35 @@ namespace MultiChess
         {
             Piece piece = board[x, y];
             Move[] allMoves = (Move[])(Game.currentRuleSet[piece.type].Clone());
-            if(piece.team == Piece.Team.WHITE)
+            List<Move> possibleMoves = new List<Move>();  
+            for(int i = 0; i < allMoves.Length; i++)
             {
-                for(int i = 0; i < allMoves.Length; i++)
+                if (piece.team == Piece.Team.WHITE)
                 {
                     allMoves[i].relativeX *= -1;
                     allMoves[i].relativeY *= -1;
                 }
+                int realX = x + allMoves[i].relativeX;
+                int realY = y + allMoves[i].relativeY;
+
+                if (realX < 0 || realY < 0 || realX > 7 || realY > 7)
+                    continue;
+
+                if (piece.team != board[realX,realY].team && board[realX,realY].type != Piece.Type.KING)
+                {
+                    if (allMoves[i].first && piece.hasMoved)
+                    {
+                        continue;
+                    }
+                    if ((!allMoves[i].moving) && allMoves[i].taking && board[realX,realY].team == null) 
+                    {
+                        continue;
+                    }
+
+                    possibleMoves.Add(allMoves[i]);
+                }
             }
-            return new List<Move>(allMoves);
+            return possibleMoves;
         }
     }
 }
