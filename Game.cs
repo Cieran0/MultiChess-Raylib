@@ -27,15 +27,18 @@ namespace MultiChess
 
         public static Dictionary<Piece.Type, Move[]> currentRuleSet = ruleSets[0];
 
+        public static Piece.Team currentPlayer = Piece.Team.WHITE;
+
         public static void init(State state)
         {
             Game.state = state;
+            currentPlayer = Piece.Team.WHITE;
             Game.board = new Board();
         }
 
         public static void selectPiece(int x, int y)
         {
-            if (board.getPiece(x,y).type == Piece.Type.EMPTY)
+            if (board.getPiece(x,y).team != currentPlayer)
             {
                 return;
             }
@@ -55,8 +58,18 @@ namespace MultiChess
             int selectedX = (int)selectedPiece.Value.X;
             int selectedY = (int)selectedPiece.Value.Y;
             board.movePiece(selectedX,selectedY,x,y);
+
+            nextTurn();
+
             Display.onPieceMove();
         }
+
+        private static void nextTurn()
+        {
+            currentPlayer = (currentPlayer==Piece.Team.WHITE)?
+                Piece.Team.BLACK : Piece.Team.WHITE;
+        }
+
         private static Dictionary<Piece.Type, Move[]> loadRuleSetFromString(string ruleSetString)
         {
             Dictionary<Piece.Type, Move[]> ruleSet = new Dictionary<Piece.Type, Move[]>();
