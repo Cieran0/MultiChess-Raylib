@@ -24,32 +24,37 @@ namespace MultiChess
 
         static Color bg = Color.LIGHTGRAY;
         static readonly Color[] squareColors = { Color.BLANK, Color.BLUE, Color.YELLOW };
+        private static int[,] squareType = new int[8,8];
 
-        public static void drawGame()
+        public static void onPieceSelected()
         {
-            Raylib.BeginDrawing();
 
-            Raylib.ClearBackground(bg);
-
-
-            //TODO: OPTOMIZE THIS IT SHOULDNT RUN EVERY FRAME JUST ONE WHEN PIECE IS SELECTED 
-
-            int[,] squareType = new int[8, 8];
-
-            if(Game.selectedPiece != null)
+            if (Game.selectedPiece != null)
             {
                 int x = (int)Game.selectedPiece.Value.X;
                 int y = (int)Game.selectedPiece.Value.Y;
 
                 squareType[x, y] = 1;
 
-                foreach(Move move in Game.board.getPossibleMoves(x,y))
+                foreach (Move move in Game.board.getPossibleMoves(x, y))
                 {
                     int newX = x + move.relativeX;
                     int newY = y + move.relativeY;
                     squareType[x + move.relativeX, y + move.relativeY] = 2;
                 }
             }
+        }
+
+        public static void onPieceMove()
+        {
+            squareType = new int[8, 8];
+        }
+
+        public static void drawGame()
+        {
+            Raylib.BeginDrawing();
+
+            Raylib.ClearBackground(bg);
 
             for(int x = 0; x < 8; x++)
             {

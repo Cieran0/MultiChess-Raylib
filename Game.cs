@@ -41,6 +41,8 @@ namespace MultiChess
             }
             //TODO: only select player pieces
             selectedPiece = new Vector2(x, y);
+
+            Display.onPieceSelected();
         }
 
         public static void moveSelectedPieceTo(int x, int y)
@@ -53,6 +55,7 @@ namespace MultiChess
             int selectedX = (int)selectedPiece.Value.X;
             int selectedY = (int)selectedPiece.Value.Y;
             board.movePiece(selectedX,selectedY,x,y);
+            Display.onPieceMove();
         }
         private static Dictionary<Piece.Type, Move[]> loadRuleSetFromString(string ruleSetString)
         {

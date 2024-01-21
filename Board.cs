@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Raylib_cs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MultiChess
@@ -112,7 +114,7 @@ namespace MultiChess
                 if (realX < 0 || realY < 0 || realX > 7 || realY > 7)
                     continue;
 
-                if (piece.team != board[realX,realY].team && board[realX,realY].type != Piece.Type.KING)
+                if (piece.team != board[realX,realY].team)
                 {
                     if (allMoves[i].first && piece.hasMoved)
                     {
@@ -126,6 +128,91 @@ namespace MultiChess
                     possibleMoves.Add(allMoves[i]);
                 }
             }
+
+            possibleMoves = pathFind(possibleMoves, x, y);
+
+            return possibleMoves;
+        }
+
+        private List<Move> pathFind(List<Move> possibleMoves, int x, int y)
+        {
+            possibleMoves = sortMoves(possibleMoves);
+            bool[,] validMoveGrid = new bool[8, 8];
+            validMoveGrid[x, y] = true;
+
+            List<Move> validMoves = new List<Move>();
+
+            foreach(Move move in possibleMoves)
+            {
+                int moveX = x + move.relativeX;
+                int moveY = y + move.relativeY;
+                if(move.jumping)
+                {
+                    validMoveGrid[moveX, moveY] = true;
+                    validMoves.Add(move);
+                    continue;
+                }
+
+                bool hasValidNeighbour = false;
+                for (int i = -1; i < 2; i++)
+                {
+                    for (int j = -1; j < 2; j++) 
+                    {
+                        if(moveX + i < 0 || moveY + j < 0 || moveX + i > 7 || moveY+j > 7)
+                        {
+                            continue;
+                        }
+                        if (validMoveGrid[moveX+i,moveY+j]) 
+                        {
+                            if (board[moveX,moveY].team == null)
+                                validMoveGrid[moveX, moveY] = true;
+                            hasValidNeighbour = true;
+                            break;
+                        }
+                    }
+                }
+                if(hasValidNeighbour)
+                {
+                    validMoves.Add(move);
+                }
+                //Console.WriteLine($"X:{move.relativeX}, Y:{move.relativeY}, Valid:{hasValidNeighbour}");
+            }
+            //for(int j = 0; j < 8; j++)
+            //{
+            //    for (int i = 0; i < 8; i++)
+            //    {
+            //        Console.Write(validMoveGrid[i, j] ? "1" : "0");
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            //Console.WriteLine("---------------------");
+            return validMoves;
+        }
+
+        private List<Move> sortMoves(List<Move> possibleMoves)
+        {
+            double[] totalDistance = new double[possibleMoves.Count];
+
+            for(int i = 0; i < possibleMoves.Count; i++) {
+                totalDistance[i] = Math.Sqrt(Math.Pow(possibleMoves[i].relativeX, 2) + Math.Pow(possibleMoves[i].relativeY, 2));          }
+
+            //Insertion sort
+            for (int i = 1; i < possibleMoves.Count; i++)
+            {
+                int j = i;
+                while (j > 0 && totalDistance[j] < totalDistance[j - 1])
+                {
+                    double temp = totalDistance[j];
+                    Move buff = possibleMoves[j];
+                    totalDistance[j] = totalDistance[j - 1];
+                    possibleMoves[j] = possibleMoves[j - 1];
+                    totalDistance[j - 1] = temp;
+                    possibleMoves[j - 1] = buff;
+                    j--;
+                }
+            }
+
             return possibleMoves;
         }
     }
